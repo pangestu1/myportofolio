@@ -25,4 +25,5 @@ RUN chmod -R 775 storage bootstrap/cache
 EXPOSE 8080
 
 # Jalankan Laravel (Render inject env saat runtime)
-CMD php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan serve --host=0.0.0.0 --port=8080
+CMD php artisan key:generate --force && php artisan serve --host=0.0.0.0 --port=8080
+
