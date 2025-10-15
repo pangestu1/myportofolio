@@ -17,12 +17,11 @@ RUN composer config -g --unset repos.packagist && \
 
 RUN composer install --no-dev --optimize-autoloader
 
-# Copy .env.example ke .env (Render akan override variabelnya)
-RUN cp .env.example .env
-
+# Pastikan APP_KEY dan variabel env lain disuplai oleh Render
 RUN chmod -R 775 storage bootstrap/cache
 
 EXPOSE 8080
 
-# Jalankan migrasi sebelum serve
-CMD php artisan key:generate --force && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8080
+# Jalankan migrasi sebelum serve (APP_KEY sudah tersedia dari env)
+CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8080
+
