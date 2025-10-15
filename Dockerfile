@@ -17,6 +17,9 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Install dependencies Laravel
 RUN composer install --no-dev --optimize-autoloader
+RUN php artisan config:clear && php artisan cache:clear && php artisan route:clear
+RUN php artisan config:cache && php artisan route:cache
+
 
 # Generate key Laravel
 # RUN php artisan key:generate
