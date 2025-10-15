@@ -17,21 +17,12 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Install dependencies Laravel
 RUN composer install --no-dev --optimize-autoloader
-# RUN php artisan config:clear && php artisan cache:clear && php artisan route:clear
-# RUN php artisan config:cache && php artisan route:cache
-
-
-# Generate key Laravel
-# RUN php artisan key:generate
-
-# Cache konfigurasi
-RUN php artisan config:cache && php artisan route:cache
 
 # Pastikan direktori storage dan bootstrap/cache dapat ditulis
 RUN chmod -R 775 storage bootstrap/cache
 
-# Expose port
+# Expose port 8080
 EXPOSE 8080
 
-# Jalankan Laravel
-CMD php artisan serve --host=0.0.0.0 --port=8080
+# Jalankan Laravel (Render inject env saat runtime)
+CMD php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan serve --host=0.0.0.0 --port=8080
