@@ -1,27 +1,34 @@
-# Gunakan image PHP + Apache
+# Gunakan image PHP dengan ekstensi yang dibutuhkan
 FROM php:8.2-apache
 
-# Install ekstensi PHP yang dibutuhkan Laravel
-RUN docker-php-ext-install pdo pdo_mysql
+# Install dependencies sistem yang diperlukan
+RUN apt-get update && apt-get install -y \
+    git unzip libzip-dev zip \
+    && docker-php-ext-install pdo_mysql zip
 
-# Copy semua file project ke container
-COPY . /var/www/html
+# Set working directory
+WORKDIR /var/www/html
 
-# Ubah DocumentRoot Apache agar ke folder public/
-RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
+# Copy semua file Laravel ke dalam container
+COPY . .
 
-# Aktifkan mod_rewrite (wajib buat Laravel route)
-RUN a2enmod rewrite
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Tambahkan konfigurasi AllowOverride agar .htaccess bisa jalan
-RUN echo "<Directory /var/www/html/public>\n\
-    AllowOverride All\n\
-    Require all granted\n\
-</Directory>" > /etc/apache2/conf-available/laravel.conf && \
-    a2enconf laravel
+# Install dependencies Laravel
+RUN composer install --no-dev --optimize-autoloader
 
-# Beri izin untuk storage dan cache Laravel
-RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+# Generate key Laravel
+# RUN php artisan key:generate
 
-# Jalankan Apache
-CMD ["apache2-foreground"]
+# Cache konfigurasi
+RUN php artisan config:cache && php artisan route:cache
+
+# Pastikan direktori storage dan bootstrap/cache dapat ditulis
+RUN chmod -R 775 storage bootstrap/cache
+
+# Expose port
+EXPOSE 8080
+
+# Jalankan Laravel
+CMD php artisan serve --host=0.0.0.0 --port=8080
