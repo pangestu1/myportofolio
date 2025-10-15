@@ -22,7 +22,7 @@ RUN composer install --no-dev --optimize-autoloader
 RUN chmod -R 775 storage bootstrap/cache
 
 # Jalankan artisan key generate saat pertama kali build
-RUN php artisan key:generate
+# RUN php artisan key:generate
 
 # Expose port 80
 EXPOSE 80
