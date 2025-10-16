@@ -2,7 +2,7 @@
 FROM php:8.2-fpm
 
 # Install dependensi sistem dan ekstensi PHP
-RUN apt-get update && apt-get install -y nginx git curl libpng-dev libonig-dev libxml2-dev zip unzip
+RUN apt-get update && apt-get install -y nginx git curl libpng-dev libonig-dev libxml2-dev zip unzip libzip-dev
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
 # Install Composer
