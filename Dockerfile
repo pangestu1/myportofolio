@@ -1,8 +1,8 @@
 FROM php:8.2-apache
 
 RUN apt-get update && apt-get install -y \
-    git unzip libzip-dev zip libsqlite3-dev \
-    && docker-php-ext-install pdo_sqlite sqlite3 zip
+    git unzip libzip-dev \
+    && docker-php-ext-install zip
 
 WORKDIR /var/www/html
 
