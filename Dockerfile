@@ -11,11 +11,13 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set direktori kerja
 WORKDIR /var/www/html
 
-# Salin file composer dan install dependensi
-COPY composer.json composer.lock ./
+# Salin file composer, artisan, dan folder lain yang diperlukan untuk autoload
+COPY composer.json composer.lock artisan ./
+
+# Install dependensi PHP. Sekarang artisan sudah ada.
 RUN composer install --no-dev --optimize-autoloader
 
-# Salin seluruh kode aplikasi
+# Salin sisa seluruh kode aplikasi
 COPY . .
 
 # Jalankan perintah artisan dan atur permission
@@ -28,6 +30,10 @@ COPY start.sh /start.sh
 
 # Berikan izin eksekusi pada script start
 RUN chmod +x /start.sh
+
+# Buat user www-data dan gunakan user tersebut
+# User www-data sudah ada di image php-fpm, jadi kita tidak perlu membuatnya lagi
+USER www-data
 
 # Jalankan script start untuk memulai Nginx dan PHP-FPM
 CMD ["/start.sh"]
